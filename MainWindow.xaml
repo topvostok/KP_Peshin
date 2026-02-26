@@ -4,12 +4,13 @@
         xmlns:conv="clr-namespace:WpfApp1.Converters"
         Title="ALPINE — Горнолыжный магазин"
         Width="1280" Height="750"
-        MinWidth="1100" MinHeight="650"
+        MinWidth="1920" MinHeight="1080"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+   >
 
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
@@ -538,7 +539,7 @@
             </Grid>
 
             <!-- Transition overlay (full screen flash on section change) -->
-            <Rectangle x:Name="TransitionOverlay" Fill="#FF07080D" Opacity="0" IsHitTestVisible="False" RadiusX="0" RadiusY="0"/>
+            <Rectangle x:Name="TransitionOverlay" Fill="#FF07080D" Opacity="0" IsHitTestVisible="False" RadiusX="0" RadiusY="0" HorizontalAlignment="Center" Width="1920" Height="1080" VerticalAlignment="Bottom"/>
 
         </Grid>
     </Border>
