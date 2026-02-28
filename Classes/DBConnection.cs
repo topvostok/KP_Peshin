@@ -16,6 +16,7 @@ namespace WpfApp1.Classes
         // ── Строка подключения ─────────────────────────────────────────────
         // Замените uid/pwd/database на ваши реальные данные
         public static string ConnectionString =
+
             "server=127.0.0.1;port=3306;uid=root;pwd=;database=alpine_shop;";
 
         // ── Кэш последней загрузки (чтобы не дёргать БД лишний раз) ───────
