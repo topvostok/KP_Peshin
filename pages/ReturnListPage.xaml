@@ -1,0 +1,153 @@
+<Page x:Class="WpfApp1.Pages.ReturnListPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="Transparent">
+
+    <Grid Margin="24,16,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,18">
+            <StackPanel>
+                <TextBlock Text="ВОЗВРАТЫ" FontFamily="Segoe UI Black" FontSize="24"
+                           Foreground="#FFF0F4FF" FontWeight="Black"/>
+                <TextBlock x:Name="SubTitle" Text="загрузка..." FontFamily="Segoe UI"
+                           FontSize="11" Foreground="#44C87DFF" Margin="2,2,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="＋  Оформить возврат" Style="{StaticResource BtnCyan}"
+                        Click="BtnAdd_Click" Margin="0,0,8,0"/>
+                <Button Content="↻  Обновить" Style="{StaticResource BtnGhost}"
+                        Click="BtnRefresh_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Style="{StaticResource StatCard}"
+                    Margin="0,0,8,0" BorderBrush="#1AC87DFF">
+                <StackPanel>
+                    <TextBlock Text="ВСЕГО ВОЗВРАТОВ" FontFamily="Segoe UI" FontSize="8"
+                               FontWeight="SemiBold" Foreground="#44C87DFF" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="S0" Text="—" FontFamily="Segoe UI Black"
+                               FontSize="26" Foreground="#FFC87DFF"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource StatCard}"
+                    Margin="0,0,8,0" BorderBrush="#1AA3FF5C">
+                <StackPanel>
+                    <TextBlock Text="В ОТЛИЧНОМ СОСТОЯНИИ" FontFamily="Segoe UI" FontSize="8"
+                               FontWeight="SemiBold" Foreground="#44A3FF5C" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="S1" Text="—" FontFamily="Segoe UI Black"
+                               FontSize="26" Foreground="#FFA3FF5C"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="2" Style="{StaticResource StatCard}"
+                    Margin="0,0,8,0" BorderBrush="#1AFF5C3A">
+                <StackPanel>
+                    <TextBlock Text="ПОВРЕЖДЕНО / УТЕРЯНО" FontFamily="Segoe UI" FontSize="8"
+                               FontWeight="SemiBold" Foreground="#44FF5C3A" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="S2" Text="—" FontFamily="Segoe UI Black"
+                               FontSize="26" Foreground="#FFFF5C3A"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="3" Style="{StaticResource StatCard}" BorderBrush="#1AFF5C3A">
+                <StackPanel>
+                    <TextBlock Text="ШТРАФЫ ВСЕГО" FontFamily="Segoe UI" FontSize="8"
+                               FontWeight="SemiBold" Foreground="#44FF5C3A" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="S3" Text="—" FontFamily="Segoe UI Black"
+                               FontSize="22" Foreground="#FFFF5C3A"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="SearchBox" Grid.Row="0"
+                     Style="{StaticResource RentalTextBox}"
+                     Width="260" HorizontalAlignment="Left"
+                     Margin="0,0,0,10"
+                     TextChanged="SearchBox_TextChanged"/>
+
+            <Border Grid.Row="1" Background="#060A14" CornerRadius="10"
+                    BorderBrush="#0AFFFFFF" BorderThickness="1">
+                <DataGrid x:Name="Grid0" Style="{StaticResource RentalGrid}"
+                          Margin="0,4,0,4"
+                          MouseDoubleClick="Grid_DoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="КЛИЕНТ" Binding="{Binding ClientName}" Width="*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                    <Setter Property="Foreground" Value="#FFF0F4FF"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="СНАРЯЖЕНИЕ"  Binding="{Binding EquipmentName}" Width="*"/>
+                        <DataGridTextColumn Header="ДАТА ВОЗВРАТА" Binding="{Binding ReturnDateDisplay}" Width="120"/>
+                        <DataGridTemplateColumn Header="СОСТОЯНИЕ" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="4" Padding="8,3" Margin="0,6"
+                                            Background="{Binding ConditionColor, Converter={StaticResource HexBrush},
+                                                         ConverterParameter=25}">
+                                        <TextBlock Text="{Binding ConditionAfter}" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{Binding ConditionColor, Converter={StaticResource HexBrush}}"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ШТРАФ"   Binding="{Binding PenaltyDisplay}" Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#FFFF5C3A"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="ВОЗВРАТ ₽" Binding="{Binding RefundDisplay}" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#FFA3FF5C"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="ИНСПЕКТОР" Binding="{Binding InspectorName}" Width="130"/>
+                        <DataGridTemplateColumn Header="ДЕЙСТВИЯ" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Style="{StaticResource BtnIcon}"
+                                                Tag="{Binding Id}" Click="BtnEdit_Click">
+                                            <TextBlock Text="✏" FontSize="12" Foreground="#775DE0FF"/>
+                                        </Button>
+                                        <Button Style="{StaticResource BtnIcon}"
+                                                Tag="{Binding Id}" Click="BtnDel_Click" Margin="2,0,0,0">
+                                            <TextBlock Text="🗑" FontSize="12" Foreground="#77FF5C3A"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

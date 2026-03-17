@@ -1,0 +1,99 @@
+<Page x:Class="WpfApp1.Pages.ReturnFormPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,16,24,20">
+        <StackPanel MaxWidth="720">
+
+            <Grid Margin="0,0,0,22">
+                <StackPanel>
+                    <TextBlock x:Name="FormTitle" Text="ОФОРМИТЬ ВОЗВРАТ"
+                               FontFamily="Segoe UI Black" FontSize="22"
+                               Foreground="#FFF0F4FF" FontWeight="Black"/>
+                    <TextBlock Text="Укажите состояние и штрафы при необходимости"
+                               FontFamily="Segoe UI" FontSize="11"
+                               Foreground="#44C87DFF" Margin="2,3,0,0"/>
+                </StackPanel>
+                <Button Content="← Назад" Style="{StaticResource BtnGhost}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="BtnBack_Click"/>
+            </Grid>
+
+            <Border Background="#080D1A" CornerRadius="12"
+                    BorderBrush="#1AC87DFF" BorderThickness="1" Padding="28">
+                <StackPanel>
+
+                    <!-- Rental select -->
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="АРЕНДА *" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CbRental" Style="{StaticResource RentalCombo}"
+                                  DisplayMemberPath="DisplayText"/>
+                    </StackPanel>
+
+                    <!-- Return date + condition -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/><ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="ДАТА ВОЗВРАТА *" Style="{StaticResource FieldLabel}"/>
+                            <DatePicker x:Name="DpReturn" Style="{StaticResource RentalDatePicker}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="СОСТОЯНИЕ ПОСЛЕ *" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="CbCondition" Style="{StaticResource RentalCombo}">
+                                <ComboBoxItem Content="Отлично"/>
+                                <ComboBoxItem Content="Хорошо"/>
+                                <ComboBoxItem Content="Удовлетворительно"/>
+                                <ComboBoxItem Content="Повреждено"/>
+                                <ComboBoxItem Content="Утеряно"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Penalty + Refund + Inspector -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/>
+                            <ColumnDefinition/><ColumnDefinition Width="20"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="ШТРАФ ₽" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbPenalty" Style="{StaticResource RentalTextBox}" Text="0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="ВОЗВРАТ ЗАЛОГА ₽" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbRefund" Style="{StaticResource RentalTextBox}" Text="0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="ИНСПЕКТОР" Style="{StaticResource FieldLabel}"/>
+                            <TextBox x:Name="TbInspector" Style="{StaticResource RentalTextBox}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Notes -->
+                    <StackPanel Margin="0,0,0,28">
+                        <TextBlock Text="ЗАМЕТКИ" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TbNotes" Style="{StaticResource RentalTextBox}"
+                                 Height="70" TextWrapping="Wrap" AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="💾  Сохранить" Style="{StaticResource BtnCyan}"
+                                Click="BtnSave_Click" Margin="0,0,10,0"/>
+                        <Button Content="Отмена" Style="{StaticResource BtnGhost}"
+                                Click="BtnBack_Click" Margin="0,0,10,0"/>
+                        <Button x:Name="BtnDelete" Content="🗑  Удалить"
+                                Style="{StaticResource BtnRed}"
+                                Visibility="Collapsed"
+                                Click="BtnDelete_Click"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

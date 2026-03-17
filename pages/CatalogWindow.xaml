@@ -1,0 +1,406 @@
+﻿<Window x:Class="WpfApp1.CatalogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:WpfApp1.Converters"
+        Title="ALPINE — Каталог"
+        Width="1300" Height="820"
+        MinWidth="900" MinHeight="600"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Карточка товара каталога -->
+        <Style x:Key="CatalogCard" TargetType="Border">
+            <Setter Property="Background"      Value="#16F2F2F2"/>
+            <Setter Property="CornerRadius"    Value="14"/>
+            <Setter Property="Padding"         Value="14"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush"     Value="#10F2F2F2"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background"  Value="#26F2F2F2"/>
+                    <Setter Property="BorderBrush" Value="#22F2F2F2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Кнопка-фильтр (чип) -->
+        <Style x:Key="FilterChip" TargetType="Button">
+            <Setter Property="Background"      Value="#14F2F2F2"/>
+            <Setter Property="Foreground"      Value="#88F2F2F2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding"         Value="16,7"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="FontSize"        Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="20"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#25F2F2F2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Главная рамка (тёмный фон, скруглённые углы) -->
+    <Border Background="#FF07080D" CornerRadius="12">
+        <Grid x:Name="RootGrid">
+
+            <!-- Фоновое изображение раздела (почти прозрачное) -->
+            <Image x:Name="BgImage" Stretch="UniformToFill" Opacity="0.12"
+                   RenderOptions.BitmapScalingMode="HighQuality"/>
+
+            <!-- Градиент: атмосфера сверху вниз -->
+            <Rectangle IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#FF07080D" Offset="0.0"/>
+                        <GradientStop Color="#BB07080D" Offset="0.5"/>
+                        <GradientStop Color="#FF07080D" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+
+            <!-- Акцентная полоса слева -->
+            <Rectangle x:Name="AccentBar" Width="3"
+                       HorizontalAlignment="Left" VerticalAlignment="Stretch"
+                       RadiusX="2" RadiusY="2">
+                <Rectangle.Fill>
+                    <SolidColorBrush x:Name="AccentBarBrush" Color="#FF5DE0FF"/>
+                </Rectangle.Fill>
+            </Rectangle>
+
+            <!-- ══════ ОСНОВНАЯ СЕТКА СТРОК ══════ -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <!-- Шапка (drag + кнопки)        -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Заголовок раздела            -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Поиск + фильтры              -->
+                    <RowDefinition Height="*"/>
+                    <!-- Сетка товаров (ScrollViewer) -->
+                    <RowDefinition Height="34"/>
+                    <!-- Статус-бар                   -->
+                </Grid.RowDefinitions>
+
+                <!-- ════ СТРОКА 0: ШАПКА / TITLE BAR ════ -->
+                <Grid Grid.Row="0" MouseLeftButtonDown="TitleBar_MouseDown">
+
+                    <!-- Логотип + breadcrumb -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center" Margin="20,0,0,0">
+                        <Viewbox Width="18" Height="18" Margin="0,0,8,0">
+                            <Canvas Width="26" Height="26">
+                                <Polygon Points="13,2 24,23 2,23">
+                                    <Polygon.Stroke>
+                                        <SolidColorBrush x:Name="LogoAccentBrush" Color="#FF5DE0FF"/>
+                                    </Polygon.Stroke>
+                                    <Polygon.StrokeThickness>1.5</Polygon.StrokeThickness>
+                                    <Polygon.Fill>Transparent</Polygon.Fill>
+                                </Polygon>
+                                <Ellipse Canvas.Left="10.5" Canvas.Top="14.5" Width="5" Height="5">
+                                    <Ellipse.Fill>
+                                        <SolidColorBrush x:Name="LogoDotBrush" Color="#FF5DE0FF"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="ALPINE" FontSize="11" FontFamily="Segoe UI"
+                                   Foreground="#44F2F2F2" VerticalAlignment="Center"/>
+                        <Rectangle Width="1" Height="14" Fill="#22F2F2F2" Margin="10,0"/>
+                        <TextBlock x:Name="WindowCategoryLabel" Text="КАТАЛОГ"
+                                   FontSize="11" FontFamily="Segoe UI" FontWeight="SemiBold"
+                                   VerticalAlignment="Center">
+                            <TextBlock.Foreground>
+                                <SolidColorBrush x:Name="TitleAccentBrush" Color="#FF5DE0FF"/>
+                            </TextBlock.Foreground>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Кнопки управления окном -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                                VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Button Content="─" Width="32" Height="24" Background="Transparent"
+                                BorderThickness="0" Foreground="#55F2F2F2" FontSize="11"
+                                Cursor="Hand" Click="BtnMinimize_Click" VerticalContentAlignment="Top"/>
+                        <Button Content="□" Width="32" Height="24" Background="Transparent"
+                                BorderThickness="0" Foreground="#55F2F2F2" FontSize="13"
+                                Cursor="Hand" Click="BtnMaximize_Click"/>
+                        <Button Content="✕" Width="32" Height="24" Background="Transparent"
+                                BorderThickness="0" Foreground="#55F2F2F2" FontSize="11"
+                                Cursor="Hand" Click="BtnClose_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ════ СТРОКА 1: ЗАГОЛОВОК ════ -->
+                <Grid Grid.Row="1" Margin="36,4,36,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Тег + большой заголовок -->
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Rectangle Width="18" Height="1" VerticalAlignment="Center" Margin="0,0,9,0">
+                                <Rectangle.Fill>
+                                    <SolidColorBrush x:Name="TagLineBrush" Color="#FF5DE0FF"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <TextBlock x:Name="PageTagLabel" Text="ГОРНЫЕ ЛЫЖИ"
+                                       FontSize="10" FontFamily="Segoe UI">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="TagBrush" Color="#FF5DE0FF"/>
+                                </TextBlock.Foreground>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="TitleLine1Label" Text="ГОРНЫЕ"
+                                       FontFamily="Segoe UI Black" FontWeight="Black"
+                                       FontSize="42" LineHeight="38"
+                                       Foreground="#FFF2F2F2" Margin="0,0,12,0"/>
+                            <TextBlock x:Name="TitleLine2Label" Text="ЛЫЖИ"
+                                       FontFamily="Segoe UI Black" FontWeight="Black"
+                                       FontSize="42" LineHeight="38">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="Title2Brush" Color="#FF5DE0FF"/>
+                                </TextBlock.Foreground>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Счётчики справа -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,4">
+                        <TextBlock x:Name="ItemCountLabel" Text="Загрузка…"
+                                   FontFamily="Segoe UI" FontSize="11"
+                                   Foreground="#44F2F2F2" HorizontalAlignment="Right"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <Border Background="#14F2F2F2" CornerRadius="4"
+                                    Padding="8,3" Margin="0,0,6,0">
+                                <TextBlock Text="В наличии" FontFamily="Segoe UI"
+                                           FontSize="10" Foreground="#55F2F2F2"/>
+                            </Border>
+                            <Border CornerRadius="4" Padding="8,3">
+                                <Border.Background>
+                                    <SolidColorBrush x:Name="InStockBadgeBrush" Color="#1A5DE0FF"/>
+                                </Border.Background>
+                                <TextBlock x:Name="InStockCountLabel" Text="0 позиций"
+                                           FontFamily="Segoe UI" FontSize="10">
+                                    <TextBlock.Foreground>
+                                        <SolidColorBrush x:Name="InStockTextBrush" Color="#FF5DE0FF"/>
+                                    </TextBlock.Foreground>
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ════ СТРОКА 2: ПОИСК + ФИЛЬТРЫ ════ -->
+                <Grid Grid.Row="2" Margin="36,0,36,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Кнопки-фильтры -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button x:Name="FilterAll"     Content="Все"         Tag="all"
+                                Style="{StaticResource FilterChip}"
+                                Margin="0,0,6,0" Click="Filter_Click"/>
+                        <Button x:Name="FilterBudget"  Content="До 30 000 ₽" Tag="budget"
+                                Style="{StaticResource FilterChip}"
+                                Margin="0,0,6,0" Click="Filter_Click"/>
+                        <Button x:Name="FilterMid"     Content="30–60 000 ₽" Tag="mid"
+                                Style="{StaticResource FilterChip}"
+                                Margin="0,0,6,0" Click="Filter_Click"/>
+                        <Button x:Name="FilterPremium" Content="Премиум"     Tag="premium"
+                                Style="{StaticResource FilterChip}"
+                                Margin="0,0,6,0" Click="Filter_Click"/>
+                        <Button x:Name="FilterInStock" Content="В наличии"   Tag="instock"
+                                Style="{StaticResource FilterChip}"
+                                Click="Filter_Click"/>
+                    </StackPanel>
+
+                    <!-- Строка поиска -->
+                    <Border Grid.Column="1" Background="#12F2F2F2" CornerRadius="8"
+                            Padding="10,0" Height="32" VerticalAlignment="Center">
+                        <Grid>
+                            <Path Data="M10 2C5.6 2 2 5.6 2 10C2 14.4 5.6 18 10 18C11.8 18 13.5 17.4 14.9 16.3L19.3 20.7L20.7 19.3L16.3 14.9C17.4 13.5 18 11.8 18 10C18 5.6 14.4 2 10 2ZM10 4C13.3 4 16 6.7 16 10C16 13.3 13.3 16 10 16C6.7 16 4 13.3 4 10C4 6.7 6.7 4 10 4Z"
+                                  Fill="#33F2F2F2" Width="13" Height="13" Stretch="Uniform"
+                                  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBox x:Name="SearchBox"
+                                     Background="Transparent" BorderThickness="0"
+                                     Foreground="#AAF2F2F2" CaretBrush="#88F2F2F2"
+                                     FontFamily="Segoe UI" FontSize="12"
+                                     VerticalAlignment="Center" Margin="22,0,0,0"
+                                     TextChanged="SearchBox_TextChanged">
+                                <TextBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="0"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <!-- Плейсхолдер (скрывается при наборе) -->
+                            <TextBlock x:Name="SearchPlaceholder"
+                                       Text="Поиск…"
+                                       Foreground="#33F2F2F2" FontFamily="Segoe UI" FontSize="12"
+                                       IsHitTestVisible="False" VerticalAlignment="Center"
+                                       Margin="22,0,0,0"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- ════ СТРОКА 3: СЕТКА ТОВАРОВ ════ -->
+                <ScrollViewer Grid.Row="3"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Margin="36,0,20,0">
+                    <Grid>
+                        <!-- Сообщение «нет товаров» -->
+                        <TextBlock x:Name="EmptyLabel"
+                                   Text="Товары не найдены"
+                                   FontFamily="Segoe UI" FontSize="14"
+                                   Foreground="#33F2F2F2"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,60,0,0"
+                                   Visibility="Collapsed"/>
+
+                        <!-- WrapPanel с карточками товаров -->
+                        <ItemsControl x:Name="ProductsGrid">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource CatalogCard}"
+                                            Width="270" Margin="0,0,14,14">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="18" ShadowDepth="0"
+                                                              Color="#66000000" Opacity="0.4"/>
+                                        </Border.Effect>
+                                        <StackPanel>
+
+                                            <!-- Фото товара -->
+                                            <Border CornerRadius="10" ClipToBounds="True"
+                                                    Height="160" Margin="0,0,0,12">
+                                                <Grid>
+                                                    <Image Source="{Binding ImageUrl}"
+                                                           Stretch="UniformToFill"
+                                                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    <!-- Бейдж «Нет в наличии» -->
+                                                    <Border HorizontalAlignment="Right"
+                                                            VerticalAlignment="Top"
+                                                            Margin="6" CornerRadius="4" Padding="6,3"
+                                                            Background="#CC07080D"
+                                                            Visibility="{Binding IsOutOfStock, Converter={StaticResource BoolToVis}}">
+                                                        <TextBlock Text="Нет в наличии"
+                                                                   FontFamily="Segoe UI" FontSize="9"
+                                                                   Foreground="#88F2F2F2"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+
+                                            <!-- Бренд -->
+                                            <TextBlock Text="{Binding Brand}"
+                                                       FontFamily="Segoe UI" FontSize="10"
+                                                       Foreground="#44F2F2F2" Margin="0,0,0,3"/>
+
+                                            <!-- Название -->
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontFamily="Segoe UI" FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#EEF2F2F2"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,0,0,4"/>
+
+                                            <!-- Характеристики -->
+                                            <TextBlock Text="{Binding Specs}"
+                                                       FontFamily="Segoe UI" FontSize="10"
+                                                       Foreground="#44F2F2F2"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="0,0,0,10"/>
+
+                                            <!-- Разделитель -->
+                                            <Rectangle Height="1" Fill="#10F2F2F2" Margin="0,0,0,10"/>
+
+                                            <!-- Цена + кнопка «В корзину» -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding PriceDisplay}"
+                                                               FontFamily="Segoe UI Black"
+                                                               FontWeight="Black" FontSize="16">
+                                                        <TextBlock.Foreground>
+                                                            <SolidColorBrush x:Name="PriceBrush" Color="#FF5DE0FF"/>
+                                                        </TextBlock.Foreground>
+                                                    </TextBlock>
+                                                </StackPanel>
+
+                                                <Border Grid.Column="1" CornerRadius="8"
+                                                        Padding="12,7" Cursor="Hand">
+                                                    <Border.Background>
+                                                        <SolidColorBrush x:Name="CartBtnBgBrush" Color="#1A5DE0FF"/>
+                                                    </Border.Background>
+                                                    <TextBlock Text="В корзину"
+                                                               FontFamily="Segoe UI" FontSize="11">
+                                                        <TextBlock.Foreground>
+                                                            <SolidColorBrush x:Name="CartBtnTxtBrush" Color="#FF5DE0FF"/>
+                                                        </TextBlock.Foreground>
+                                                    </TextBlock>
+                                                </Border>
+                                            </Grid>
+
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+
+                <!-- ════ СТРОКА 4: СТАТУС-БАР ════ -->
+                <Border Grid.Row="4" Background="#08F2F2F2"
+                        BorderThickness="0,1,0,0" BorderBrush="#0AF2F2F2">
+                    <Grid Margin="36,0">
+                        <TextBlock x:Name="StatusLabel" Text="Готово"
+                                   FontFamily="Segoe UI" FontSize="10"
+                                   Foreground="#33F2F2F2" VerticalAlignment="Center"/>
+                        <TextBlock Text="© 2025 ALPINE"
+                                   FontFamily="Segoe UI" FontSize="9"
+                                   Foreground="#22F2F2F2"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+            </Grid>
+            <!-- /основная сетка строк -->
+
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,576 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:WpfApp1.Converters"
+        Title="ALPINE — Горнолыжный магазин"
+        Width="1280" Height="750"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen"
+        MaxHeight="1080" MaxWidth="1920"
+   >
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:AccentBrushConverter x:Key="AccentBrush"/>
+
+        <!-- Page Dot Style -->
+        <Style x:Key="PageDot" TargetType="Border">
+            <Setter Property="Height" Value="5"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+
+        <!-- Segment clip geometry (pie slice: top-left quadrant triangle-ish) -->
+        <!-- Defined per-use in code -->
+    </Window.Resources>
+
+    <!-- Root border (window chrome) -->
+    <Border Background="#FF07080D" CornerRadius="0">
+        <Grid x:Name="RootGrid">
+
+            <!-- ═══════════════════════════════════════════
+                 BACKGROUND IMAGE LAYER
+             ═══════════════════════════════════════════ -->
+            <Grid x:Name="BgLayer" ClipToBounds="True">
+                <Image x:Name="BgImage0" Stretch="UniformToFill" Opacity="1" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <Image x:Name="BgImage1" Stretch="UniformToFill" Opacity="0" RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                <!-- Gradient overlay (dark left, transparent right) -->
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                            <GradientStop Color="#F807080D" Offset="0.00"/>
+                            <GradientStop Color="#E507080D" Offset="0.35"/>
+                            <GradientStop Color="#8007080D" Offset="0.60"/>
+                            <GradientStop Color="#2007080D" Offset="1.00"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+
+            <!-- Noise texture overlay (subtle) -->
+            <Rectangle Opacity="0.025" IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,4,4" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing Brush="#55FFFFFF">
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry Rect="0,0,2,2"/>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+
+            <!-- ═══════════════════════════════════════════
+                 MAIN LAYOUT  (Left | Right)
+             ═══════════════════════════════════════════ -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="480"/>
+                    <ColumnDefinition Width="0.85*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- ─────────────────────────────
+                     LEFT CONTENT PANEL
+                 ───────────────────────────── -->
+                <Grid Grid.Column="0" x:Name="LeftPanel">
+
+                    <!-- Accent side bar -->
+                    <Rectangle x:Name="AccentBar" Width="3" HorizontalAlignment="Left"
+                               VerticalAlignment="Center" Height="0"
+                               RadiusX="2" RadiusY="2">
+                        <Rectangle.Fill>
+                            <SolidColorBrush x:Name="AccentBarBrush" Color="#FF5DE0FF"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+
+                    <StackPanel Margin="72,60,60,60" VerticalAlignment="Center">
+
+                        <!-- Logo -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,44">
+                            <Viewbox Width="26" Height="26" Margin="0,0,10,0">
+                                <Canvas Width="26" Height="26">
+                                    <Polygon Points="13,2 24,23 2,23">
+                                        <Polygon.Stroke>
+                                            <SolidColorBrush x:Name="LogoAccentBrush" Color="#FF5DE0FF"/>
+                                        </Polygon.Stroke>
+                                        <Polygon.StrokeThickness>1.5</Polygon.StrokeThickness>
+                                        <Polygon.Fill>Transparent</Polygon.Fill>
+                                    </Polygon>
+                                    <Ellipse Canvas.Left="10.5" Canvas.Top="14.5" Width="5" Height="5">
+                                        <Ellipse.Fill>
+                                            <SolidColorBrush x:Name="LogoDotBrush" Color="#FF5DE0FF"/>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="ALPINE" FontSize="13" 
+                                       FontFamily="Segoe UI" Foreground="#66F2F2F2"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Section tag -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Rectangle x:Name="TagLine" Width="24" Height="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                <Rectangle.Fill>
+                                    <SolidColorBrush x:Name="TagLineBrush" Color="#FF5DE0FF"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <TextBlock x:Name="PageTag" Text="ГОРНЫЕ ЛЫЖИ"
+                                       FontSize="10" FontFamily="Segoe UI"
+                                      >
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="TagBrush" Color="#FF5DE0FF"/>
+                                </TextBlock.Foreground>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <!-- Title -->
+                        <StackPanel Margin="0,0,0,22" ClipToBounds="True">
+                            <TextBlock x:Name="TitleLine1" Text="ГОРНЫЕ"
+                                       FontFamily="Segoe UI Black"
+                                       FontWeight="Black"
+                                       FontSize="72" LineHeight="65"
+                                       Foreground="#FFF2F2F2" TextOptions.TextFormattingMode="Display">
+                                <TextBlock.RenderTransform>
+                                    <TranslateTransform x:Name="Title1Transform" Y="0"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                            <TextBlock x:Name="TitleLine2" Text="ЛЫЖИ"
+                                       FontFamily="Segoe UI Black"
+                                       FontWeight="Black"
+                                       FontSize="72" LineHeight="65">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="Title2Brush" Color="#FF5DE0FF"/>
+                                </TextBlock.Foreground>
+                                <TextBlock.RenderTransform>
+                                    <TranslateTransform x:Name="Title2Transform" Y="0"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <TextBlock x:Name="PageDesc"
+                                   Text="Профессиональные горные лыжи для любого рельефа и стиля катания. От крутых трасс до мягкого пухляка — снаряжение уровня чемпионов."
+                                   FontFamily="Segoe UI" FontSize="13" FontWeight="Light"
+                                   Foreground="#66F2F2F2" TextWrapping="Wrap"
+                                   MaxWidth="440" Margin="0,0,0,32" LineHeight="22">
+                            <TextBlock.RenderTransform>
+                                <TranslateTransform x:Name="DescTransform" Y="0"/>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+
+                        <!-- Product Cards -->
+                        <ItemsControl x:Name="ProductList" Margin="0,0,0,32">
+                            <ItemsControl.RenderTransform>
+                                <TranslateTransform x:Name="CardsTransform" Y="0"/>
+                            </ItemsControl.RenderTransform>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="1" Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource ProductCard}" Margin="0,0,12,0">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="#66000000" Opacity="0.5"/>
+                                        </Border.Effect>
+                                        <StackPanel>
+                                            <Border CornerRadius="9" Margin="0,0,0,10" ClipToBounds="True">
+                                                <Image Source="{Binding ImageUrl}"
+                                                       Height="90" Stretch="UniformToFill"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontFamily="Segoe UI" FontSize="11" FontWeight="Medium"
+                                                       Foreground="#FFF2F2F2" Margin="0,0,0,4"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Price}"
+                                                       FontFamily="Segoe UI" FontSize="12" FontWeight="SemiBold">
+                                                <TextBlock.Foreground>
+                                                    <SolidColorBrush x:Name="PriceBrush" Color="#FF5DE0FF"/>
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- CTA Row -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                            <StackPanel.RenderTransform>
+                                <TranslateTransform x:Name="CtaTransform" Y="0"/>
+                            </StackPanel.RenderTransform>
+                            <Button x:Name="CtaButton"
+                                    Content="Весь каталог лыж"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Margin="0,0,14,0"
+                                    Click="CtaButton_Click">
+                                <Button.Tag>
+                                    <SolidColorBrush x:Name="CtaBrush" Color="#FF5DE0FF"/>
+                                </Button.Tag>
+                            </Button>
+                            <Button Content="Подобрать по параметрам"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Click="SearchButton_Click"/>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <!-- Page Dots (bottom left) -->
+                    <StackPanel x:Name="PageDotsPanel" Orientation="Horizontal"
+                                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                Margin="72,0,0,48">
+                        <!-- Built in code-behind -->
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- ─────────────────────────────
+                     RIGHT PANEL — HUGE CIRCLE
+                 ───────────────────────────── -->
+                <Grid Grid.Column="1" x:Name="RightPanel" ClipToBounds="True">
+
+                    <!-- The huge circle container, right-anchored, partially visible -->
+                    <Canvas x:Name="CircleCanvas" ClipToBounds="False">
+
+                        <!-- Circle is placed via code-behind PositionCircle() -->
+                        <Grid x:Name="CircleContainer">
+
+                            <!-- SPINNER — rotates -->
+                            <Grid x:Name="CircleSpinner" Width="1700" Height="1700">
+                                <Grid.RenderTransform>
+                                    <RotateTransform x:Name="SpinnerRotate" Angle="0"
+                                                     CenterX="850" CenterY="850"/>
+                                </Grid.RenderTransform>
+
+                                <!-- ── SEGMENT 0: ЛЫЖИ (top-left) ── -->
+                                <Grid x:Name="Seg0" Width="850" Height="850"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                                      Cursor="Hand">
+                                    <Grid.Clip>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="850,850" IsClosed="True">
+                                                <LineSegment Point="0,850"/>
+                                                <LineSegment Point="850,0"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Grid.Clip>
+                                    <Image x:Name="SegImg0" Stretch="UniformToFill"
+                                           HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                           Opacity="0.55" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <!-- tint overlay -->
+                                    <Rectangle x:Name="SegTint0" Opacity="0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="#FF5DE0FF"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <!-- dark gradient -->
+                                    <Rectangle>
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#0007080D" Offset="0"/>
+                                                <GradientStop Color="#AA07080D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <!-- Label -->
+                                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                Margin="0,0,160,160">
+                                        <StackPanel.RenderTransform>
+                                            <TranslateTransform X="80" Y="80"/>
+                                        </StackPanel.RenderTransform>
+                                        <Path x:Name="Icon0" Data="M12 2C10.3 2 9 3.3 9 5C9 6.1 9.5 7 10.3 7.6L3 15L4.5 16.5L7.5 13.5L9 15L6 18L7.5 19.5L10.5 16.5L12 18L8.5 21.5L10 23L14 19L14 19C14.6 19.6 15.4 20 16.3 20C18 20 19.3 18.7 19.3 17C19.3 16.2 19 15.5 18.4 15L21 12.5L19.5 11L17 13.5L15.5 12L18 9.5L16.5 8L14 10.5L12.6 9.1C13.1 8.5 13.3 7.8 13.3 7C13.3 4.2 11.8 2 10 2Z"
+                                              Fill="White" Opacity="0.7" Width="36" Height="36"
+                                              Stretch="Uniform" Margin="0,0,0,8"
+                                              HorizontalAlignment="Center"/>
+                                        <TextBlock Text="ЛЫЖИ" FontFamily="Segoe UI" FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#99F2F2F2" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Grid.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{x:Null}"/>
+                                    </Grid.InputBindings>
+                                </Grid>
+
+                                <!-- ── SEGMENT 1: СНОУБОРД (top-right) ── -->
+                                <Grid x:Name="Seg1" Width="850" Height="850"
+                                      HorizontalAlignment="Right" VerticalAlignment="Top"
+                                      Cursor="Hand">
+                                    <Grid.Clip>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="0,850" IsClosed="True">
+                                                <LineSegment Point="850,850"/>
+                                                <LineSegment Point="0,0"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Grid.Clip>
+                                    <Image x:Name="SegImg1" Stretch="UniformToFill"
+                                           HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                           Opacity="0.50" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <Rectangle x:Name="SegTint1" Opacity="0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="#FFFF5C3A"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="1,0" EndPoint="0,1">
+                                                <GradientStop Color="#0007080D" Offset="0"/>
+                                                <GradientStop Color="#AA07080D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                                Margin="160,0,0,160">
+                                        <StackPanel.RenderTransform>
+                                            <TranslateTransform X="-80" Y="80"/>
+                                        </StackPanel.RenderTransform>
+                                        <Path Data="M13 4H11V8H7V10H11V20H13V10H17V8H13V4Z M9 22H15V24H9V22Z M5 18L7 16L9 18L7 20L5 18Z M15 18L17 16L19 18L17 20L15 18Z"
+                                              Fill="White" Opacity="0.7" Width="36" Height="36"
+                                              Stretch="Uniform" Margin="0,0,0,8"
+                                              HorizontalAlignment="Center"/>
+                                        <TextBlock Text="СНОУБОРД" FontFamily="Segoe UI" FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#99F2F2F2" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- ── SEGMENT 2: МАСКИ (bottom-right) ── -->
+                                <Grid x:Name="Seg2" Width="850" Height="850"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                      Cursor="Hand">
+                                    <Grid.Clip>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="0,0" IsClosed="True">
+                                                <LineSegment Point="850,0"/>
+                                                <LineSegment Point="0,850"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Grid.Clip>
+                                    <Image x:Name="SegImg2" Stretch="UniformToFill"
+                                           HorizontalAlignment="Left" VerticalAlignment="Top"
+                                           Opacity="0.50" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <Rectangle x:Name="SegTint2" Opacity="0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="#FFA3FF5C"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="1,1" EndPoint="0,0">
+                                                <GradientStop Color="#0007080D" Offset="0"/>
+                                                <GradientStop Color="#AA07080D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                Margin="160,160,0,0">
+                                        <StackPanel.RenderTransform>
+                                            <TranslateTransform X="-80" Y="-80"/>
+                                        </StackPanel.RenderTransform>
+                                        <Path Data="M12 6C8 6 4 9 2 12C4 15 8 18 12 18C16 18 20 15 22 12C20 9 16 6 12 6ZM12 16C9.8 16 8 14.2 8 12C8 9.8 9.8 8 12 8C14.2 8 16 9.8 16 12C16 14.2 14.2 16 12 16ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z"
+                                              Fill="White" Opacity="0.7" Width="36" Height="36"
+                                              Stretch="Uniform" Margin="0,0,0,8"
+                                              HorizontalAlignment="Center"/>
+                                        <TextBlock Text="МАСКИ" FontFamily="Segoe UI" FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#99F2F2F2" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- ── SEGMENT 3: ШЛЕМЫ (bottom-left) ── -->
+                                <Grid x:Name="Seg3" Width="850" Height="850"
+                                      HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                      Cursor="Hand">
+                                    <Grid.Clip>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="850,0" IsClosed="True">
+                                                <LineSegment Point="850,850"/>
+                                                <LineSegment Point="0,0"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Grid.Clip>
+                                    <Image x:Name="SegImg3" Stretch="UniformToFill"
+                                           HorizontalAlignment="Right" VerticalAlignment="Top"
+                                           Opacity="0.50" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <Rectangle x:Name="SegTint3" Opacity="0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="#FFC87DFF"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle>
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                                                <GradientStop Color="#0007080D" Offset="0"/>
+                                                <GradientStop Color="#AA07080D" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                Margin="0,160,160,0">
+                                        <StackPanel.RenderTransform>
+                                            <TranslateTransform X="80" Y="-80"/>
+                                        </StackPanel.RenderTransform>
+                                        <Path Data="M12 1C8.1 1 5 4.1 5 8V9H4C3.4 9 3 9.4 3 10V13C3 13.6 3.4 14 4 14H5.1C5.6 16.2 7.6 18 10 18H14C16.4 18 18.4 16.2 18.9 14H20C20.6 14 21 13.6 21 13V10C21 9.4 20.6 9 20 9H19V8C19 4.1 15.9 1 12 1ZM17 12H7V8C7 5.2 9.2 3 12 3C14.8 3 17 5.2 17 8V12ZM9 20H15V22H9V20Z"
+                                              Fill="White" Opacity="0.7" Width="36" Height="36"
+                                              Stretch="Uniform" Margin="0,0,0,8"
+                                              HorizontalAlignment="Center"/>
+                                        <TextBlock Text="ШЛЕМЫ" FontFamily="Segoe UI" FontSize="11"
+                                                   FontWeight="SemiBold" 
+                                                   Foreground="#99F2F2F2" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Divider lines from center -->
+                                <Line X1="850" Y1="850" X2="850" Y2="0"
+                                      Stroke="#18FFFFFF" StrokeThickness="1" IsHitTestVisible="False"/>
+                                <Line X1="850" Y1="850" X2="1700" Y2="850"
+                                      Stroke="#18FFFFFF" StrokeThickness="1" IsHitTestVisible="False"/>
+                                <Line X1="850" Y1="850" X2="850" Y2="1700"
+                                      Stroke="#18FFFFFF" StrokeThickness="1" IsHitTestVisible="False"/>
+                                <Line X1="850" Y1="850" X2="0" Y2="850"
+                                      Stroke="#18FFFFFF" StrokeThickness="1" IsHitTestVisible="False"/>
+
+                                <!-- Outer ring -->
+                                <Ellipse Width="1700" Height="1700"
+                                         Stroke="#18FFFFFF" StrokeThickness="1"
+                                         IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <!-- Hub center -->
+                                <Ellipse Width="120" Height="120"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         IsHitTestVisible="False">
+                                    <Ellipse.Fill>
+                                        <SolidColorBrush Color="#FF07080D"/>
+                                    </Ellipse.Fill>
+                                    <Ellipse.Stroke>
+                                        <SolidColorBrush x:Name="HubStrokeBrush" Color="#22FFFFFF"/>
+                                    </Ellipse.Stroke>
+                                    <Ellipse.StrokeThickness>1</Ellipse.StrokeThickness>
+                                </Ellipse>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            IsHitTestVisible="False">
+                                    <TextBlock Text="раздел" FontFamily="Segoe UI" FontSize="8"
+                                               Foreground="#55F2F2F2"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="HubNumber" Text="01"
+                                               FontFamily="Segoe UI Black" FontWeight="Black"
+                                               FontSize="28" HorizontalAlignment="Center">
+                                        <TextBlock.Foreground>
+                                            <SolidColorBrush x:Name="HubNumBrush" Color="#FF5DE0FF"/>
+                                        </TextBlock.Foreground>
+                                    </TextBlock>
+                                </StackPanel>
+
+                            </Grid>
+                            <!-- /CircleSpinner -->
+
+                        </Grid>
+                        <!-- /CircleContainer -->
+
+                    </Canvas>
+                    <!-- /CircleCanvas -->
+
+                    <!-- Nav arrows (left side of right panel) -->
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left"
+                                Margin="12,0,0,0" Orientation="Vertical">
+                        <Button x:Name="BtnPrev" Style="{StaticResource NavButton}"
+                                Margin="0,0,0,10" Click="BtnPrev_Click" ToolTip="Предыдущий">
+                            <Path Data="M12 5L5 12L12 19" Stroke="#AAF2F2F2" StrokeThickness="2"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Width="14" Height="14" Stretch="Uniform"/>
+                        </Button>
+                        <Button x:Name="BtnNext" Style="{StaticResource NavButton}"
+                                Click="BtnNext_Click" ToolTip="Следующий">
+                            <Path Data="M12 5L19 12L12 19" Stroke="#AAF2F2F2" StrokeThickness="2"
+                                  StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  Width="14" Height="14" Stretch="Uniform"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Scroll hint vertical text -->
+                    <TextBlock Text="ПРОКРУТИТЬ КОЛЕСО" FontSize="8" FontFamily="Segoe UI"
+                             Foreground="#25F2F2F2"
+                               HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                               Margin="8,0,0,50">
+                        <TextBlock.RenderTransform>
+                            <RotateTransform Angle="-90" CenterX="0" CenterY="10"/>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+
+                </Grid>
+                <!-- /RightPanel -->
+
+            </Grid>
+
+            <!-- ═══════════════════════════════════════════
+                 WINDOW CHROME  (Title bar + controls)
+             ═══════════════════════════════════════════ -->
+            <Grid VerticalAlignment="Top" Height="44"
+                  MouseLeftButtonDown="TitleBar_MouseDown">
+                <!-- Year tag -->
+                <TextBlock Text="© 2025 ALPINE" FontSize="9"
+                           FontFamily="Segoe UI" Foreground="#33F2F2F2"
+                           HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0"/>
+
+                <!-- Admin button + Window controls -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                            VerticalAlignment="Center" Margin="0,0,12,0">
+                    <!-- ═══ КНОПКА ПАНЕЛИ УПРАВЛЕНИЯ ═══ -->
+                    <Button x:Name="BtnAdminPanel"
+                            Content="⚙  ПРОКАТ — ПАНЕЛЬ"
+                            FontFamily="Segoe UI" FontSize="9" FontWeight="SemiBold"
+                            Foreground="#AA5DE0FF"
+                            Background="#0A5DE0FF"
+                            BorderBrush="#225DE0FF" BorderThickness="1"
+                            Padding="12,0" Height="24" Cursor="Hand"
+                            Margin="0,0,16,0"
+                            Click="BtnAdminPanel_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="5"
+                                        Padding="{TemplateBinding Padding}"
+                                        Height="{TemplateBinding Height}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="#1A5DE0FF"/>
+                                        <Setter TargetName="bd" Property="BorderBrush" Value="#FF5DE0FF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="BtnMinimize" Content="─" Width="32" Height="24"
+                            Background="Transparent" BorderThickness="0" Foreground="#55F2F2F2"
+                            FontSize="11" Cursor="Hand" Click="BtnMinimize_Click"
+                            VerticalContentAlignment="Top"/>
+                    <Button x:Name="BtnMaximize" Content="□" Width="32" Height="24"
+                            Background="Transparent" BorderThickness="0" Foreground="#55F2F2F2"
+                            FontSize="13" Cursor="Hand" Click="BtnMaximize_Click"/>
+                    <Button x:Name="BtnClose" Content="✕" Width="32" Height="24"
+                            Background="Transparent" BorderThickness="0" Foreground="#55F2F2F2"
+                            FontSize="11" Cursor="Hand" Click="BtnClose_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Transition overlay (full screen flash on section change) -->
+            <Rectangle x:Name="TransitionOverlay" Fill="#FF07080D" Opacity="0" IsHitTestVisible="False" RadiusX="0" RadiusY="0" HorizontalAlignment="Center" Width="1920" Height="1080" VerticalAlignment="Bottom"/>
+
+        </Grid>
+    </Border>
+</Window>
