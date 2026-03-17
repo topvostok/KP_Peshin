@@ -25,6 +25,7 @@
         <SolidColorBrush x:Key="AccentBoard"  Color="#FFFF5C3A"/>
         <SolidColorBrush x:Key="AccentMask"   Color="#FFA3FF5C"/>
         <SolidColorBrush x:Key="AccentHelmet" Color="#FFC87DFF"/>
+        
 
         <!-- Витрина: PrimaryButton -->
         <Style x:Key="PrimaryButton" TargetType="Button">
