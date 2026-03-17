@@ -10,7 +10,7 @@ namespace WpfApp1.Classes
         private const string Port = "3306";
         private const string Database = "AlpineRental";
         private const string User = "root";
-        private const string Password = ""; // ваш пароль, если есть
+        private const string Password = ""; 
         // ─────────────────────────────────────────────────────────
 
         public static string ConnectionString =>

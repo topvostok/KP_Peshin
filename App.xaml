@@ -5,12 +5,8 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 
-        <!-- Глобальные конвертеры -->
       
 
-        <!-- ═══════════════════════════════════════════════════════
-             ОРИГИНАЛЬНЫЕ СТИЛИ (витрина магазина)
-        ═══════════════════════════════════════════════════════ -->
         <Color x:Key="BgColor">#FF07080D</Color>
         <Color x:Key="SurfaceColor">#FF111118</Color>
         <Color x:Key="TextColor">#FFF2F2F2</Color>

@@ -26,8 +26,8 @@ namespace WpfApp1
                 Description  = "Профессиональные горные лыжи для любого рельефа и стиля катания. От крутых трасс до мягкого пухляка — снаряжение уровня чемпионов.",
                 AccentColor  = Color.FromRgb(0x5D, 0xE0, 0xFF),
                 CtaText      = "Весь каталог лыж",
-                BgImageUrl   = "https://static.tildacdn.com/tild3338-6236-4234-a434-353232316336/photo_2025-03-11_15-.jpg",
-                SegImageUrl  = "https://static.tildacdn.com/tild3338-6236-4234-a434-353232316336/photo_2025-03-11_15-.jpg",
+                BgImageUrl   = "https://rollandfeel.smokingpaper.com/wp-content/uploads/2021/11/top-ski-resorts-in-germany.jpg",
+                SegImageUrl  = "https://rollandfeel.smokingpaper.com/wp-content/uploads/2021/11/top-ski-resorts-in-germany.jpg",
                 SegLabel     = "ЛЫЖИ",
                 Products     = new List<ProductModel>
                 {
@@ -44,8 +44,8 @@ namespace WpfApp1
                 Description  = "Фрирайд, трассы, парк — найди свою доску из 180+ моделей. Скорость, контроль и стиль от ведущих мировых марок.",
                 AccentColor  = Color.FromRgb(0xFF, 0x5C, 0x3A),
                 CtaText      = "Выбрать сноуборд",
-                BgImageUrl   = "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=1600&q=90",
-                SegImageUrl  = "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?auto=format&fit=crop&w=900&q=85",
+                BgImageUrl   = "https://ir.ozone.ru/s3/multimedia-o/w1200/6470022972.jpg",
+                SegImageUrl  = "https://ir.ozone.ru/s3/multimedia-o/w1200/6470022972.jpg",
                 SegLabel     = "СНОУБОРД",
                 Products     = new List<ProductModel>
                 {
@@ -62,8 +62,8 @@ namespace WpfApp1
                 Description  = "Максимальная видимость в любую погоду. Антифог-покрытие, сферические линзы и широкое поле зрения для безопасного спуска.",
                 AccentColor  = Color.FromRgb(0xA3, 0xFF, 0x5C),
                 CtaText      = "Подобрать маску",
-                BgImageUrl   = "https://images.unsplash.com/photo-1546961342-ea5f62d96a91?auto=format&fit=crop&w=1600&q=90",
-                SegImageUrl  = "https://images.unsplash.com/photo-1546961342-ea5f62d96a91?auto=format&fit=crop&w=900&q=85",
+                BgImageUrl   = "https://ir.ozone.ru/s3/multimedia-s/w1200/6850543528.jpg",
+                SegImageUrl  = "https://ir.ozone.ru/s3/multimedia-s/w1200/6850543528.jpg",
                 SegLabel     = "МАСКИ",
                 Products     = new List<ProductModel>
                 {
@@ -97,15 +97,12 @@ namespace WpfApp1
         private double _rotation = 0;
         private bool _busy = false;
 
-        // Dot controls
         private readonly List<Border> _dots = new List<Border>();
 
-        // Segment grids (for click & active tint)
         private readonly Grid[] _segs;
         private readonly Rectangle[] _segTints;
         private readonly Image[] _segImgs;
 
-        // Http client for image loading
         private static readonly HttpClient _http = new HttpClient();
 
         // ── Constructor ────────────────────────────────────────
@@ -121,7 +118,6 @@ namespace WpfApp1
             MouseWheel += OnMouseWheel;
             SizeChanged += OnSizeChanged;
 
-            // Segment click handlers
             for (int i = 0; i < 4; i++)
             {
                 int idx = i;
@@ -141,15 +137,17 @@ namespace WpfApp1
         private void OnSizeChanged(object sender, SizeChangedEventArgs e) => PositionCircle();
 
         // ── Circle Positioning ─────────────────────────────────
+        // Центр круга = правый нижний угол RightPanel → видна только верхняя левая ¼
         private void PositionCircle()
         {
             double panelW = RightPanel.ActualWidth > 0 ? RightPanel.ActualWidth : 600;
             double panelH = RightPanel.ActualHeight > 0 ? RightPanel.ActualHeight : 750;
 
             double circleSize = 1700;
-            double leftEdge = panelW * 0.22;
-            double centerX = leftEdge + circleSize / 2;
-            double centerY = panelH / 2;
+
+            // Центр круга ставим точно в правый нижний угол панели
+            double centerX = panelW;
+            double centerY = panelH;
 
             CircleContainer.Width = circleSize;
             CircleContainer.Height = circleSize;
@@ -306,10 +304,7 @@ namespace WpfApp1
                 bmp.Freeze();
                 Dispatcher.Invoke(() => callback(bmp));
             }
-            catch
-            {
-                // Silently ignore
-            }
+            catch { /* Silently ignore */ }
         }
 
         // ── UI Update Helpers ──────────────────────────────────
@@ -373,7 +368,6 @@ namespace WpfApp1
             fadeIn.Completed += (s, e) =>
             {
                 onMidpoint();
-
                 var fadeOut = new DoubleAnimation
                 {
                     To = 0,
@@ -461,20 +455,13 @@ namespace WpfApp1
             {
                 var currentSection = _sections[_current];
 
-                // Определяем категорию для БД
                 string dbCategory;
-                if (currentSection.Tag == "ГОРНЫЕ ЛЫЖИ")
-                    dbCategory = "skis";
-                else if (currentSection.Tag == "СНОУБОРДЫ")
-                    dbCategory = "snowboard";
-                else if (currentSection.Tag == "МАСКИ И ОЧКИ")
-                    dbCategory = "goggles";
-                else if (currentSection.Tag == "ШЛЕМЫ")
-                    dbCategory = "helmets";
-                else
-                    dbCategory = "skis";
+                if (currentSection.Tag == "ГОРНЫЕ ЛЫЖИ") dbCategory = "skis";
+                else if (currentSection.Tag == "СНОУБОРДЫ") dbCategory = "snowboard";
+                else if (currentSection.Tag == "МАСКИ И ОЧКИ") dbCategory = "goggles";
+                else if (currentSection.Tag == "ШЛЕМЫ") dbCategory = "helmets";
+                else dbCategory = "skis";
 
-                // Проверяем подключение к БД
                 if (!DatabaseHelper.TestConnection(out _))
                 {
                     var result = MessageBox.Show(
@@ -484,13 +471,10 @@ namespace WpfApp1
                         MessageBoxImage.Warning);
 
                     if (result == MessageBoxResult.Yes)
-                    {
                         OpenDemoCatalog(currentSection);
-                    }
                     return;
                 }
 
-                // Проверяем, есть ли товары в БД
                 var testProducts = EquipmentShopRepository.GetProductsByCategory(dbCategory);
                 if (testProducts == null || testProducts.Count == 0)
                 {
@@ -501,13 +485,10 @@ namespace WpfApp1
                         MessageBoxImage.Information);
 
                     if (result == MessageBoxResult.Yes)
-                    {
                         OpenDemoCatalog(currentSection);
-                    }
                     return;
                 }
 
-                // Открываем каталог с данными из БД
                 var catalogWin = new CatalogWindow(
                     dbCategory,
                     currentSection.AccentColor,
@@ -515,9 +496,7 @@ namespace WpfApp1
                     currentSection.TitleLine1,
                     currentSection.TitleLine2,
                     currentSection.BgImageUrl)
-                {
-                    Owner = this
-                };
+                { Owner = this };
                 catalogWin.ShowDialog();
             }
             catch (Exception ex)
@@ -538,9 +517,7 @@ namespace WpfApp1
                     section.TitleLine1,
                     section.TitleLine2,
                     section.BgImageUrl)
-                {
-                    Owner = this
-                };
+                { Owner = this };
                 demoWin.ShowDialog();
             }
             catch (Exception ex)
